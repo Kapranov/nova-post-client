@@ -21,6 +21,10 @@ description:         Please see the README on GitHub at <https://github.com/Kapr
 
 dependencies:
 - base >= 4.7 && < 5
+- bytestring
+- http-client
+- http-client-tls
+- http-conduit
 
 ghc-options:
 - -Wall
