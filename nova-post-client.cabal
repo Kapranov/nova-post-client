@@ -25,7 +25,7 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Client
   other-modules:
       Paths_nova_post_client
   autogen-modules:
