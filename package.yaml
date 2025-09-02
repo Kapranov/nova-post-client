@@ -20,11 +20,13 @@ extra-source-files:
 description:         Please see the README on GitHub at <https://github.com/Kapranov/nova-post-client#readme>
 
 dependencies:
+- aeson
 - base >= 4.7 && < 5
 - bytestring
 - http-client
 - http-client-tls
 - http-conduit
+- yaml
 
 ghc-options:
 - -Wall
