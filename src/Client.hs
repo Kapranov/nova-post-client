@@ -21,8 +21,6 @@ getToken = do
     print $ getResponseHeader "Content-Type" response
     S8.putStrLn $ Yaml.encode (getResponseBody response :: Value)
 
-
-
 -- Endpoint Definition:
 --    https://api.novapost.com/v.1.0 - Production environment
 --    https://api-stage.novapost.com/v.1.0 - Test environment
@@ -30,6 +28,259 @@ getToken = do
 --    GET Generate a temporary JWT-token - https://api-stage.novapost.com/v.1.0/clients/authorization?apiKey=
 --    curl --location 'https://api-stage.novapost.com/v.1.0/clients/authorization?apiKey='
 -- Dictionaries
+--    GET  Find divisions - https://api-stage.novapost.com/v.1.0/divisions?limit=5&page=1&countryCodes[]=PL
+--    curl --location -g 'https://api-stage.novapost.com/v.1.0/divisions?limit=5&page=1&countryCodes[]=PL' --header 'Accept: application/json'
+--    GET  Find measurements - https://api-stage.novapost.com/v.1.0/dictionary/measurements?limit=25&page=1
+--    curl --location 'https://api-stage.novapost.com/v.1.0/dictionary/measurements?limit=25&page=1'
+--    GET  Find currencies - https://api-stage.novapost.com/v.1.0/dictionary/currencies?page=1&limit=100&codes[]=UAH
+--    curl --location -g 'https://api-stage.novapost.com/v.1.0/dictionary/currencies?page=1&limit=100&codes[]=UAH'
+--    GET  Find cargo classifiers - https://api-stage.novapost.com/v.1.0/dictionary/classifier?country-code=UA&fuzzy=true&keyword=book&locale=uk&size=15
+--    curl --location 'https://api-stage.novapost.com/v.1.0/dictionary/classifier?country-code=UA&fuzzy=true&keyword=book&locale=uk&size=15'
 -- Services
+--    POST Exchange rates - https://api.novapost.com/v.1.0/exchange-rates/conversion
+--    curl --location 'https://api.novapost.com/v.1.0/exchange-rates/conversion' \
+--    --header 'Accept: application/json' \
+--    --header 'Content-Type: application/json' \
+--    --data '{
+--        "amount": 100,
+--        "countryCode": "UA",
+--        "currencyCode": "USD",
+--        "date": "2023-10-16T00:00:00.000000Z"
+--    }'
 -- Shipments
+--    GET  Find documents - https://api-stage.novapost.com/v.1.0/shipments?ids[]=376859&limit=1&page=1
+--    curl --location -g 'https://api-stage.novapost.com/v.1.0/shipments?ids[]=376859&limit=1&page=1'
+--    POST Create Documents Shipments - https://api-stage.novapost.com/v.1.0/shipments
+--    curl --location 'https://api-stage.novapost.pl/v.1.0/shipments' \
+--    --data-raw '{
+--        "status": "ReadyToShip",
+--        "clientOrder": "",
+--        "note": "",
+--        "payerType": "Sender",
+--        "payerContractNumber": null,
+--        "invoice": null,
+--        "services": [],
+--        "parcels": [
+--            {
+--                "cargoCategory": "documents",
+--                "number": null,
+--                "parcelDescription": "Documents",
+--                "insuranceCost": "0.01",
+--                "rowNumber": 1,
+--                "untied": false,
+--                "width": 250,
+--                "length": 350,
+--                "height": 20,
+--                "actualWeight": 1000,
+--                "volumetricWeight": 1000
+--            }
+--        ],
+--        "sender": {
+--            "companyTin": "",
+--            "companyName": "",
+--            "phone": "48900555111",
+--            "email": "chuckS@ff.ff",
+--            "name": "Chuck NorrisS",
+--            "countryCode": "PL",
+--            "settlementId": 22326,
+--            "address": null,
+--            "divisionId": 948389,
+--            "ioss": null,
+--            "addressParts": {}
+--        },
+--        "recipient": {
+--            "companyTin": "",
+--            "companyName": "",
+--            "phone": "48555444333",
+--            "email": "ChuckNorrisR@gmail.comm",
+--            "name": "Chuck Norris",
+--            "countryCode": "PL",
+--            "settlementId": 22326,
+--            "address": null,
+--            "divisionId": 1888291,
+--            "addressParts": {}
+--        }
+--    }'
+--    POST Calculate delivery cost - https://api-stage.novapost.com/v.1.0/shipments/calculations
+--    curl --location 'https://api-stage.novapost.com/v.1.0/shipments/calculations' \
+--    --data '{
+--        "payerType": "Sender",
+--        "services": [],
+--        "parcels": [
+--            {
+--                "cargoCategory": "documents",
+--                "parcelDescription": "Documents",
+--                "insuranceCost": "0.01",
+--                "rowNumber": 1,
+--                "width": 250,
+--                "length": 350,
+--                "height": 20,
+--                "actualWeight": 1000,
+--                "volumetricWeight": 1000
+--            }
+--        ],
+--        "sender": {
+--           "divisionId": 948389
+--        },
+--        "recipient": {
+--
+--            "divisionId": 1888291
+--        }
+--    }'
+--    PUT  Update document - https://api-stage.novapost.com/v.1.0/shipments/:id
+--    curl --location --request PUT 'https://api-stage.novapost.pl/v.1.0/shipments/301010' \
+--    --data-raw '{
+--        "status": "ReadyToShip",
+--        "clientOrder": "",
+--        "note": "",
+--        "payerType": "Sender",
+--        "payerContractNumber": null,
+--        "invoice": null,
+--        "services": [],
+--        "parcels": [
+--            {
+--                "cargoCategory": "documents",
+--                "number": null,
+--                "parcelDescription": "Documents",
+--                "insuranceCost": "0.01",
+--                "rowNumber": 1,
+--                "untied": false,
+--                "width": 250,
+--                "length": 350,
+--                "height": 20,
+--                "actualWeight": 1000,
+--                "volumetricWeight": 1000
+--            }
+--        ],
+--        "sender": {
+--            "companyTin": "",
+--            "companyName": "",
+--            "phone": "48900555111",
+--            "email": "chuckS@ff.ff",
+--            "name": "Chuck NorrisS",
+--            "countryCode": "PL",
+--            "settlementId": 22326,
+--            "address": null,
+--            "divisionId": 948389,
+--            "ioss": null,
+--            "addressParts": {}
+--        },
+--        "recipient": {
+--            "companyTin": "",
+--            "companyName": "",
+--            "phone": "48555444333",
+--            "email": "ChuckNorrisR@gmail.comm",
+--            "name": "Chuck Norris",
+--            "countryCode": "PL",
+--            "settlementId": 22326,
+--            "address": null,
+--            "divisionId": 1888291,
+--            "addressParts": {}
+--        }
+--    }'
+--    DEL  Delete document - https://api-stage.novapost.com/v.1.0/shipments/:id
+--    curl --location --request DELETE 'https://api-stage.novapost.com/v.1.0/shipments/376861' \
+--    --header 'Authorization;' \
+--    --data ''
+--    GET  Print documents - https://api-stage.novapost.com/v.1.0/shipments/print?type=marking&numbers[]=SHPL2524572231
+--    curl --location -g 'https://api-stage.novapost.com/v.1.0/shipments/print?type=marking&numbers[]=SHPL2524572231'
+--    GET  Tracking documents - https://api-stage.novapost.com/v.1.0/shipments/tracking/history/?numbers[]=SHPL2524572231
+--    curl --location -g 'https://api-stage.novapost.com/v.1.0/shipments/tracking/history/?numbers[]=SHPL2524572231'
 -- Pickups
+--    POST Create pickup - https://api-stage.novapost.pl/v.1.0/pickups
+--    curl --location 'https://api-stage.novapost.pl/v.1.0/pickups' \
+--    --header 'Content-Type: application/json' \
+--    --data-raw '{
+--        "note": "Test pickup 777? Тестовий пікап, не обробляйте!",
+--        "services": [],
+--        "phone": "48900555111",
+--        "email": "chucknorris@roundhouse.kick",
+--        "fullName": "Chuck Norris",
+--        "companyTin": "",
+--        "companyName": "",
+--        "countryCode": "PL",
+--        "addressParts": {
+--            "city": "Warszawa",
+--            "region": "Warszawa County",
+--            "street": "Admiralska",
+--            "postCode": "01234",
+--            "building": "1",
+--            "flat": "1",
+--            "block": "",
+--            "note": "Test shipment, do not process"
+--        },
+--        "pickedTimeFrom": "2025-01-24T10:52:56.515000Z",
+--        "pickedTimeTo": "2025-01-24T12:52:56.515000Z"
+--    }
+--    '
+--    GET  Retrieve list of courier pickup - https://api-stage.novapost.pl/v.1.0/pickups?ids[]=38554
+--    curl --location -g 'https://api-stage.novapost.pl/v.1.0/pickups?ids[]=38554' \
+--    --header 'Content-Type: application/json'
+--    PUT  Update a courier pickup - https://api-stage.novapost.pl/v.1.0/pickups/38558
+--    curl --location --request PUT 'https://api-stage.novapost.pl/v.1.0/pickups/38558' \
+--    --header 'accept: application/json' \
+--    --header 'Content-Type: application/json' \
+--    --data-raw '{
+--        "note": "Test pickup 777? Тестовий пікап, не обробляйте! UPDATE",
+--        "services": [],
+--        "phone": "48900555111",
+--        "email": "chucknorris@roundhouse.kick",
+--        "fullName": "Chuck Norris",
+--        "companyTin": "",
+--        "companyName": "",
+--        "countryCode": "PL",
+--        "addressParts": {
+--            "city": "Warszawa",
+--            "region": "Warszawa County",
+--            "street": "Admiralska",
+--            "postCode": "01234",
+--            "building": "1",
+--            "flat": "1",
+--            "block": "",
+--            "note": "Test shipment, do not process"
+--        },
+--        "pickedTimeFrom": "2025-01-24T10:52:56.515000Z",
+--        "pickedTimeTo": "2025-01-24T12:52:56.515000Z"
+--    }
+--    '
+--    DEL  Delete a courier pickup - https://api-stage.novapost.pl/v.1.0/pickups/:id
+--    curl --location --request DELETE 'https://api-stage.novapost.pl/v.1.0/pickups/38556' \
+--    --header 'Content-Type: application/json' \
+--    --data ''
+--    POST Add shipments to a courier pickup - https://api-stage.novapost.pl/v.1.0/pickups/38557/shipments
+--    curl --location 'https://api-stage.novapost.pl/v.1.0/pickups/38552/shipments' \
+--    --header 'Content-Type: application/json' \
+--    --data '{
+--      "shipments": [
+--        {
+--          "shipmentId": 467861
+--        }
+--      ]
+--    }'
+--    DEL  Remove shipments from a pickup - https://api-stage.novapost.pl/v.1.0/pickups/38557/shipments
+--    curl --location --request DELETE 'https://api-stage.novapost.pl/v.1.0/pickups/38557/shipments' \
+--    --header 'Content-Type: application/json' \
+--    --data '{
+--      "shipments": [
+--        {
+--          "shipmentId": 467866
+--        }
+--      ]
+--    }'
+--    PUT  Update pickup request status - https://api-stage.novapost.pl/v.1.0/pickups/:id/status
+--    curl --location --request PUT 'https://api-stage.novapost.pl/v.1.0/pickups/38555/status' \
+--    --header 'Content-Type: application/json' \
+--    --data '{
+--        "status": "Created",
+--        "lockVersion": 2,
+--        "note": "Test changhe status to Created!"
+--    }'
+--    POST Retrieve time intervals for pickup - https://api-stage.novapost.pl/v.1.0/time-intervals/find
+--    curl --location 'https://api-stage.novapost.pl/v.1.0/time-intervals/find' \
+--    --header 'Content-Type: application/json' \
+--    --data '{
+--      "type": "PickupNextDay",
+--      "countryCode": "PL",
+--      "latitude": 52.215192,
+--      "longitude": 20.985943
+--    }'
