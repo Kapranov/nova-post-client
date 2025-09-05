@@ -15,7 +15,7 @@ simpleQuery = do
 
 getToken :: IO ()
 getToken = do
-    response <- httpJSON "https://api-stage.novapost.com/v.1.0/clients/authorization?apiKey=65d273e6d8597259f1f520b170ce50e7"
+    response <- httpJSON "https://api-stage.novapost.com/v.1.0/clients/authorization?apiKey="
     putStrLn $ "The status code was: " ++
                show (getResponseStatusCode response)
     print $ getResponseHeader "Content-Type" response
